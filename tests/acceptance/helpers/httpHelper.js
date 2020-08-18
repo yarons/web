@@ -105,6 +105,8 @@ const requestOCSEndpoint = function(path, params, userId = 'admin', header = {})
     'ocs/v2.php',
     path + separator + 'format=json'
   )
+  console.log(options)
+  console.log(url)
   return fetcher(url, options)
 }
 
