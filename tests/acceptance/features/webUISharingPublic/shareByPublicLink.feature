@@ -35,6 +35,7 @@ Feature: Share by public link
   Scenario Outline: simple sharing by public link
     Given user "user1" has logged in using the webUI
     When the user creates a new public link for resource "<shared-resource>" using the webUI
+    Then no message should be displayed on the webUI
     Then a public link with the last created link share token as name should be listed for resource "<shared-resource>" on the webUI
     And user "user1" should have a share with these details:
       | field       | value              |
