@@ -55,6 +55,7 @@ Feature: Sharing folders with multiple internal users using advanced permissions
     And as "user4" folder "/Shares/simple-folder" should not exist
     Examples:
       | role                 | displayed-role       | extra-permissions     | displayed-permissions | actual-permissions          |
+      | Advanced permissions | Advanced permissions | create                | create                | read, create                |
       | Advanced permissions | Advanced permissions | delete                | delete                | read, delete                |
       | Advanced permissions | Advanced permissions | update                | update                | read, update                |
       | Advanced permissions | Advanced permissions | delete, update        | delete, update        | read, delete, update        |
@@ -106,7 +107,6 @@ Feature: Sharing folders with multiple internal users using advanced permissions
     And as "user4" folder "/Shares/simple-folder" should not exist
     Examples:
       | role                 | displayed-role       | extra-permissions     | displayed-permissions | actual-permissions          |
-      | Advanced permissions | Advanced permissions | create                | create                | read, create                |
       | Advanced permissions | Advanced permissions | share, delete         | share, delete         | read, share, delete         |
       | Advanced permissions | Advanced permissions | share, update         | share, update         | read, update, share         |
       | Advanced permissions | Advanced permissions | share, create         | share, create         | read, share, create         |
@@ -161,5 +161,4 @@ Feature: Sharing folders with multiple internal users using advanced permissions
     And as "user4" folder "/Shares/simple-folder" should not exist
     Examples:
       | role                 | displayed-role       | extra-permissions | displayed-permissions | actual-permissions           |
-      | Advanced permissions | Advanced permissions | create            | create, update        | read, create, update         |
       | Advanced permissions | Editor               | delete, create    | ,                     | read, delete, create, update |

@@ -12,7 +12,6 @@ Feature: Sharing files and folders with internal users with different permission
       | user1    |
       | user2    |
 
-  @skipOnOCIS @issue-product-203
   Scenario: Change permissions of the previously shared folder
     Given user "user2" has shared folder "simple-folder" with user "user1" with "read" permissions
     And user "user1" has accepted the share "simple-folder" offered by user "user2"
@@ -26,23 +25,6 @@ Feature: Sharing files and folders with internal users with different permission
       | file_target | /Shares/simple-folder |
       | item_type   | folder                |
       | permissions | read, share           |
-
-  @skipOnOC10 @issue-product-203 @issue-ocis-717
-  #after fixing the issue delete this scenario and use the one above by deleting the @skipOnOCIS tag there
-  Scenario: Change permissions of the previously shared folder
-    Given user "user2" has shared folder "simple-folder" with user "user1" with "read, update" permissions
-    And user "user1" has accepted the share "simple-folder" offered by user "user2"
-    And user "user2" has logged in using the webUI
-    Then custom permission "update" should be set for user "User One" for folder "simple-folder" on the webUI
-    When the user sets custom permission for current role of collaborator "User One" for folder "simple-folder" to "create" using the webUI
-    Then custom permissions "create, update" should be set for user "User One" for folder "simple-folder" on the webUI
-    And user "user1" should have received a share with these details:
-      | field       | value                |
-      | uid_owner   | user2                |
-      | share_with  | user1                |
-      | file_target | /Shares/simple-folder|
-      | item_type   | folder               |
-      | permissions | read, update, create |
 
   @issue-1853
   @skipOnOCIS @issue-product-270
@@ -94,7 +76,6 @@ Feature: Sharing files and folders with internal users with different permission
       | item_type   | folder              |
       | permissions | read, create, share |
 
-  @skipOnOCIS @issue-product-203
   Scenario Outline: share a folder with another internal user assigning a role and the permissions
     Given user "user2" has logged in using the webUI
     When the user shares folder "simple-folder" with user "User One" as "<role>" with permissions "<extra-permissions>" using the webUI
@@ -115,29 +96,6 @@ Feature: Sharing files and folders with internal users with different permission
       | Advanced permissions | Advanced permissions    | share, create                 | share, create         | read, share, create                 |
       | Advanced permissions | Advanced permissions    | update, share                 | share, update         | read, update, share                 |
       | Advanced permissions | Editor                  | delete, share, create, update | ,                     | read, share, delete, update, create |
-
-  @skipOnOC10 @issue-product-203
-  #after fixing the issue delete this scenario and use the one above by deleting the @skipOnOCIS tag there
-  Scenario Outline: share a folder with another internal user assigning a role and the permissions
-    Given user "user2" has logged in using the webUI
-    When the user shares folder "simple-folder" with user "User One" as "<role>" with permissions "<extra-permissions>" using the webUI
-    And user "user1" accepts the share "simple-folder" offered by user "user2" using the sharing API
-    Then user "User One" should be listed as "<displayed-role>" in the collaborators list for folder "simple-folder" on the webUI
-    And custom permissions "<displayed-permissions>" should be set for user "User One" for folder "simple-folder" on the webUI
-    Then user "user1" should have received a share with these details:
-      | field       | value          |
-      | uid_owner   | user2          |
-      | share_with  | user1          |
-      | file_target | /Shares/simple-folder |
-      | item_type   | folder         |
-      | permissions | <permissions>  |
-    Examples:
-      | role                 | displayed-role       | extra-permissions             | displayed-permissions | permissions                  |
-      | Viewer               | Viewer               | ,                             | ,                     | read                         |
-      | Editor               | Editor               | ,                             | ,                     | read, create, update, delete |
-      | Advanced permissions | Advanced permissions | create                        | create, update        | read, create, update         |
-      | Advanced permissions | Advanced permissions | update                        | update                | read, update                 |
-      | Advanced permissions | Editor               | delete, create, update        | ,                     | read, delete, update, create |
 
   @skipOnOCIS @issue-product-203
   Scenario Outline: Change permissions of the previously shared file
@@ -213,7 +171,6 @@ Feature: Sharing files and folders with internal users with different permission
   #     | item_type   | file       |
   #     | permissions | read       |
 
-  @skipOnOCIS @issue-product-203
   Scenario Outline: share a file with another internal user assigning a role and the permissions
     Given user "user2" has logged in using the webUI
     When the user shares file "lorem.txt" with user "User One" as "<role>" with permissions "<collaborators-permissions>" using the webUI
@@ -232,27 +189,6 @@ Feature: Sharing files and folders with internal users with different permission
       | Viewer               | Viewer         | ,                         | ,                     | read, share         |
       | Editor               | Editor         | ,                         | ,                     | read, share, update |
       | Advanced permissions | Editor         | share, update             | ,                     | read, share, update |
-
-  @skipOnOC10 @issue-product-203
-  #after fixing the issue delete this scenario and use the one above by deleting the @skipOnOCIS tag there
-  Scenario Outline: share a file with another internal user assigning a role and the permissions
-    Given user "user2" has logged in using the webUI
-    When the user shares file "lorem.txt" with user "User One" as "<role>" with permissions "<collaborators-permissions>" using the webUI
-    And user "user1" accepts the share "lorem.txt" offered by user "user2" using the sharing API
-    Then user "User One" should be listed as "<displayed-role>" in the collaborators list for file "lorem.txt" on the webUI
-    And custom permissions "<displayed-permissions>" should be set for user "User One" for file "lorem.txt" on the webUI
-    Then user "user1" should have received a share with these details:
-      | field       | value         |
-      | uid_owner   | user2         |
-      | share_with  | user1         |
-      | file_target | /Shares/lorem.txt    |
-      | item_type   | file          |
-      | permissions | <permissions> |
-    Examples:
-      | role                 | displayed-role | collaborators-permissions | displayed-permissions | permissions  |
-      | Viewer               | Viewer         | ,                         | ,                     | read         |
-      | Editor               | Editor         | ,                         | ,                     | read, update |
-      | Advanced permissions | Editor         | update                    | ,                     | read, update |
 
   @skipOnOCIS
   Scenario: Share a folder without share permissions using API and check if it is listed on the collaborators list for original owner

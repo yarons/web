@@ -495,7 +495,6 @@ Feature: Sharing files and folders with internal users
       | item_type   | folder                |
       | permissions | read,share            |
 
-  @skipOnOCIS @issue-product-203
   Scenario Outline: Share files/folders with special characters in their name
     Given user "user2" has created folder "Sample,Folder,With,Comma"
     And user "user2" has created file "sample,1.txt"
@@ -531,41 +530,3 @@ Feature: Sharing files and folders with internal users
       | Viewer               | Viewer               | read,share                      | read,share        |
       | Editor               | Editor               | read,update,create,delete,share | read,update,share |
       | Advanced permissions | Advanced permissions | read                            | read              |
-
-  @skipOnOC10 @issue-product-203
-  #after fixing the issue delete this scenario and use the one above by deleting the @skipOnOCIS tag there
-  Scenario Outline: Share files/folders with special characters in their name
-    Given user "user2" has created folder "Sample,Folder,With,Comma"
-    And user "user2" has created file "sample,1.txt"
-    And user "user2" has logged in using the webUI
-    When the user shares folder "Sample,Folder,With,Comma" with user "User One" as "<set-role>" using the webUI
-    And user "user1" accepts the share "Sample,Folder,With,Comma" offered by user "user2" using the sharing API
-    And the user shares file "sample,1.txt" with user "User One" as "<set-role>" using the webUI
-    And user "user1" accepts the share "sample,1.txt" offered by user "user2" using the sharing API
-    Then user "User One" should be listed as "<expected-role>" in the collaborators list for folder "Sample,Folder,With,Comma" on the webUI
-    And user "User One" should be listed as "<expected-role>" in the collaborators list for file "sample,1.txt" on the webUI
-    And user "user1" should have received a share with these details:
-      | field       | value                     |
-      | uid_owner   | user2                     |
-      | share_with  | user1                     |
-      | file_target | /Shares/Sample,Folder,With,Comma |
-      | item_type   | folder                    |
-      | permissions | <permissions-folder>      |
-    And user "user1" should have received a share with these details:
-      | field       | value              |
-      | uid_owner   | user2              |
-      | share_with  | user1              |
-      | file_target | /Shares/sample,1.txt      |
-      | item_type   | file               |
-      | permissions | <permissions-file> |
-    When the user re-logs in as "user1" using the webUI
-    And the user opens folder "Shares" using the webUI
-    Then these files should be listed on the webUI
-      | files                    |
-      | Sample,Folder,With,Comma |
-      | sample,1.txt             |
-    Examples:
-      | set-role             | expected-role | permissions-folder        | permissions-file |
-      | Viewer               | Viewer        | read                      | read             |
-      | Editor               | Editor        | read,update,create,delete | read,update      |
-      | Advanced permissions | Viewer        | read                      | read             |
