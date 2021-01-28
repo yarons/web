@@ -56,7 +56,7 @@ Feature: Sharing folders with multiple internal users using advanced permissions
     And as "user4" folder "/Shares/simple-folder" should not exist
     Examples:
       | role                 | displayed-role       | extra-permissions | displayed-permissions | actual-permissions   |
-      | Advanced permissions | Advanced permissions | delete            | delete                | read, delete         |
+      # | Advanced permissions | Advanced permissions | delete            | delete                | read, delete         |
       | Advanced permissions | Advanced permissions | update            | update                | read, update         |
       | Advanced permissions | Advanced permissions | delete, update    | delete, update        | read, delete, update |
       | Advanced permissions | Advanced permissions | update, create    | update, create        | read, update, create |
