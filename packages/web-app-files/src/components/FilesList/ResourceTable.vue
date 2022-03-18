@@ -250,6 +250,15 @@ export default defineComponent({
       default: null
     },
     /**
+     * Mapping with template `<resource.field>:<targetRoute.param>` which maps a field of a resource to a param of the target route.
+     * Defaults to `storageId:storageId` to map the `storageId` field of a resource to the `storageId` param of the target route.
+     */
+    targetRouteParamMapper: {
+      type: String,
+      required: false,
+      default: 'storageId:storageId'
+    },
+    /**
      * Asserts whether clicking on the resource name triggers any action
      */
     areResourcesClickable: {
@@ -532,23 +541,27 @@ export default defineComponent({
       this.openWithPanel('sharing-item')
     },
     folderLink(file) {
-      return this.createFolderLink(file.path, file.storageId)
+      return this.createFolderLink(file.path, file)
     },
     parentFolderLink(file) {
-      return this.createFolderLink(path.dirname(file.path), file.storageId)
+      return this.createFolderLink(path.dirname(file.path), file)
     },
-    createFolderLink(path, storageId) {
+    createFolderLink(path, file) {
       if (this.targetRoute === null) {
         return {}
+      }
+      const params = {
+        item: path.replace(/^\//, ''),
+        ...this.targetRoute.params
+      }
+      const [fileKey, routeParamKey] = this.targetRouteParamMapper.split(':')
+      if (file[fileKey]) {
+        params[routeParamKey] = file[fileKey]
       }
       return {
         name: this.targetRoute.name,
         query: this.targetRoute.query,
-        params: {
-          item: path.replace(/^\//, ''),
-          ...this.targetRoute.params,
-          ...(storageId && { storageId })
-        }
+        params
       }
     },
     fileDragged(file) {

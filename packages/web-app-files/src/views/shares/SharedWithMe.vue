@@ -113,6 +113,7 @@
         :resources="sharesItems"
         :are-resources-clickable="showsAcceptedShares"
         :target-route="resourceTargetLocation"
+        target-route-param-mapper="name:shareName"
         :header-position="fileListHeaderY"
         :sort-by="sharesSortBy"
         :sort-dir="sharesSortDir"
