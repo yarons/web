@@ -91,6 +91,36 @@ When(
 )
 
 When(
+  '{string} downloads the following file(s) using batch action',
+  async function (this: World, stepUser: string, stepTable: DataTable) {
+    const { page } = this.actorsEnvironment.getActor({ id: stepUser })
+    let downloads
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const downloadInfo = stepTable.hashes().reduce((acc, stepRow) => {
+      const { resource, from } = stepRow
+
+      if (!acc[from]) {
+        acc[from] = []
+      }
+
+      acc[from].push(resource)
+
+      return acc
+    }, {})
+
+    for (const folder of Object.keys(downloadInfo)) {
+      const files = downloadInfo[folder]
+      downloads = await resourceObject.downloadFilesBatchAction({ folder, names: files })
+    }
+
+    expect(downloads.length).toBe(1)
+    downloads.forEach((download) => {
+      expect(download.suggestedFilename()).toBe('download.tar')
+    })
+  }
+)
+
+When(
   '{string} renames the following resource(s)',
   async function (this: World, stepUser: string, stepTable: DataTable) {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
