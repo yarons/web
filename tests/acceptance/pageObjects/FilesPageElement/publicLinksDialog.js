@@ -30,8 +30,6 @@ module.exports = {
         locateStrategy: this.elements.publicLinkEditButton.locateStrategy,
         selector: linkRowEditButtonSelector
       }
-      console.log("one", linkRowEditButtonSelector)
-      console.log("two", linkRowEditButton)
       return this.waitForElementVisible(linkRowEditButton)
         .initAjaxCounters()
         .click(linkRowEditButton)
