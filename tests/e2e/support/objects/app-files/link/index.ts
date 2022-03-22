@@ -1,5 +1,5 @@
 import { Page } from 'playwright'
-import { createLink, createLinkArgs } from './actions'
+import {createLink, editLink, createLinkArgs, editLinkArgs} from './actions'
 import { LinksEnvironment } from '../../../environment'
 
 export class Link {
@@ -20,6 +20,17 @@ export class Link {
       link: { name: args.name, url, password: args.password }
     })
 
+    await this.#page.goto(startUrl)
+  }
+
+  async edit(args: Omit<editLinkArgs, 'page'>): Promise<void> {
+    const startUrl = this.#page.url()
+    let name = args.oldName
+    const url = await editLink({ page: this.#page, ...args })
+    if(args.newName){
+      name = args.newName
+    }
+    linkStore.set(name, { name: name, url, password: args.password })
     await this.#page.goto(startUrl)
   }
 }

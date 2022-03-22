@@ -27,3 +27,22 @@ When(
     }
   }
 )
+
+When('{string} edits the public link named {string} of file {string} changing following',
+    async function (this: World, stepUser: string, oldName: any, resource: string, stepTable: DataTable): Promise<void> {
+      const {page} = this.actorsEnvironment.getActor({id: stepUser})
+      const linkObject = new objects.applicationFiles.Link({page})
+      const editInfo = stepTable.hashes()
+      for (const linkEdit of editInfo) {
+          const {newName, role, dateOfExpiration, password } = linkEdit
+          await linkObject.edit({
+              resource,
+              oldName,
+              newName,
+              role,
+              dateOfExpiration,
+              password
+          })
+      }
+    })
+
