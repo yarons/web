@@ -27,10 +27,14 @@ export class Link {
     const startUrl = this.#page.url()
     let name = args.oldName
     const url = await editLink({ page: this.#page, ...args })
-    if(args.newName){
-      name = args.newName
-    }
-    linkStore.set(name, { name: name, url, password: args.password })
-    await this.#page.goto(startUrl)
-  }
+    this.#linksEnvironment.createLink({
+      key: args.name,
+      link: { name: args.name, url, password: args.password }
+    })
+  //   if (args.newName) {
+  //     name = args.newName
+  //   }
+  //   linkStore.set(name, { name: name, url, password: args.password })
+  //   await this.#page.goto(startUrl)
+  // }
 }
