@@ -4,7 +4,6 @@ import {
   createResourceArgs,
   deleteResource,
   deleteResourceArgs,
-  downloadResourceBatchAction,
   downloadResources,
   downloadResourcesArgs,
   moveOrCopyResource,
@@ -47,13 +46,13 @@ export class Resource {
     return downloads
   }
 
-  async downloadFilesBatchAction(args: Omit<downloadResourcesArgs, 'page'>): Promise<Download[]> {
-    const startUrl = this.#page.url()
-    const downloads = await downloadResourceBatchAction({ page: this.#page, ...args })
-    await this.#page.goto(startUrl)
-
-    return downloads
-  }
+  // async downloadFilesBatchAction(args: Omit<downloadResourcesArgs, 'page'>): Promise<Download[]> {
+  //   const startUrl = this.#page.url()
+  //   const downloads = await downloadResourceBatchAction({ page: this.#page, ...args })
+  //   await this.#page.goto(startUrl)
+  //
+  //   return downloads
+  // }
 
   async rename(args: Omit<renameResourceArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
