@@ -27,12 +27,11 @@
                 v-oc-tooltip="$gettext('Clear selection')"
                 :aria-label="$gettext('Clear selection')"
                 class="oc-ml-m"
-                appearance="outline"
                 @click="unselectAllGroups"
               >
                 <oc-icon name="close" />
               </oc-button>
-              <oc-button appearance="outline" class="oc-ml-m" @click="toggleDeleteGroupModal">
+              <oc-button class="oc-ml-m" @click="toggleDeleteGroupModal">
                 <oc-icon name="delete-bin" />
                 <translate>Delete</translate>
               </oc-button>
