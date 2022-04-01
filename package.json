@@ -41,6 +41,7 @@
     "not OperaMobile > 0"
   ],
   "dependencies": {
+    "glob": "^7.2.0",
     "vue": "^2.6.10"
   },
   "devDependencies": {
