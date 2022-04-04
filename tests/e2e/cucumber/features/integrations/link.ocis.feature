@@ -38,3 +38,4 @@ Feature: link
     And "Alice" edits the public link named "myPublicLink" of file "folderPublic" changing following
       | role   |
       | editor |
+    And "Alice" logs out  
