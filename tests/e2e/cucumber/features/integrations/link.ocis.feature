@@ -35,4 +35,6 @@ Feature: link
       | resource     | from         |
       | lorem.txt    | folderPublic |
       | textfile.txt | folderPublic |
-    And "Alice" logs out
+    And "Alice" edits the public link named "myPublicLink" of file "folderPublic" changing following
+      | role   |
+      | editor |

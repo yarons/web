@@ -18,7 +18,6 @@ Feature: link
     And "Alice" creates a public link for the following resource using the sidebar panel
       | resource     | name         | role     | dateOfExpiration | password |
       | folderPublic | myPublicLink | uploader | +5 days          | 12345    |
-    And "Alice" logs out
       # Then "Alice" should see 1 public link
     When "Anonymous" opens the public link "myPublicLink"
     And "Anonymous" unlocks the public link with password "12345"
@@ -33,3 +32,6 @@ Feature: link
     # Then the public should not see the following files on the files-drop page
     #  | textfile.txt |
     And "Anonymous" logs out
+    When "Alice" edits the public link named "myPublicLink" of file "folderPublic" changing following
+      | role   |
+      | editor |

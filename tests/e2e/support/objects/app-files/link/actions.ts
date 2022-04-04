@@ -24,7 +24,7 @@ export type editLinkArgs = {
   password: string
 }
 
-const fillPublicLinK = async (page, name, role, dateOfExpiration, password): Promise<void> => {
+const fillPublicLink = async (page, name, role, dateOfExpiration, password): Promise<void> => {
   if (name) {
     await page.locator('#oc-files-file-link-name').fill(name)
   }
@@ -79,7 +79,7 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
       break
   }
   await page.locator('#files-file-link-add').click()
-  await fillPublicLinK(page, name, role, dateOfExpiration, password)
+  await fillPublicLink(page, name, role, dateOfExpiration, password)
   await page.locator('#oc-files-file-link-create').click()
   return await page
     .locator(`//ul/li//h5[contains(text(),'${name}')]/following-sibling::div/a`)
@@ -106,7 +106,7 @@ export const editLink = async (args: editLinkArgs): Promise<string> => {
   if (newName) {
     name = newName
   }
-  await fillPublicLinK(page, name, role, dateOfExpiration, password)
+  await fillPublicLink(page, name, role, dateOfExpiration, password)
   await page.locator('#oc-files-file-link-save').click()
   return await page
     .locator(`//ul/li//h5[contains(text(),'${name}')]/following-sibling::div/a`)

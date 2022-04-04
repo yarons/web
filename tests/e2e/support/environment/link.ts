@@ -10,7 +10,7 @@ export class LinksEnvironment {
     return linkStore.get(key)
   }
 
-  createLink({ key, link }: { key: string; link: Link }): Link {
+  storeLink({ key, link }: { key: string; link: Link }): Link {
     if (linkStore.has(key)) {
       throw new Error(`link with key '${key}' already exists`)
     }

@@ -37,7 +37,7 @@ When(
     resource: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = this.actorsEnvironment.getActor({ id: stepUser })
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const linkObject = new objects.applicationFiles.Link({ page })
     const editInfo = stepTable.hashes()
     for (const linkEdit of editInfo) {
