@@ -30,6 +30,7 @@ Feature: link
     #When the public reloads the public link pages
     #Then the public should not see the following files on the files-drop page
     #  | textfile.txt |
+    And "Anonymous" logs out
     When "Alice" downloads the following files using the batch action
       | resource     | from         |
       | lorem.txt    | folderPublic |
