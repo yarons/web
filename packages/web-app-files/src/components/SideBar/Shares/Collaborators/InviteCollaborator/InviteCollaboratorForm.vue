@@ -35,11 +35,14 @@
         <span />
       </template>
     </oc-select>
-    <p
-      id="files-share-invite-hint"
-      class="oc-mt-xs oc-text-meta"
-      v-text="inviteDescriptionMessage"
-    />
+    <p>
+      <span
+        id="files-share-invite-hint"
+        class="oc-mt-xs oc-text-meta"
+        v-text="inviteDescriptionMessage"
+      />
+      <oc-contextual-helper v-bind="inviteCollaboratorHelp" />
+    </p>
     <div class="oc-flex oc-flex-middle oc-flex-between oc-mb-l">
       <role-dropdown
         :resource="highlightedFile"
@@ -89,6 +92,7 @@ import {
 } from '../../../../../helpers/share'
 import { clientService } from 'web-pkg/src/services'
 import { useCapabilityFilesSharingResharing } from 'web-pkg/src/composables'
+import { shareInviteCollaboratorHelp } from '../../../../../helpers/contextualHelpers.js'
 
 export default {
   name: 'InviteCollaboratorForm',
@@ -120,6 +124,9 @@ export default {
     ...mapGetters('Files', ['currentFileOutgoingCollaborators', 'highlightedFile']),
     ...mapGetters(['configuration', 'getToken', 'user']),
 
+    inviteCollaboratorHelp() {
+      return shareInviteCollaboratorHelp
+    },
     inviteDescriptionMessage() {
       return this.$gettext('Add new person by name, email or federation IDs')
     },
