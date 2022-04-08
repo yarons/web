@@ -7,7 +7,25 @@ exports[`SharedViaLink view when the view is not loading anymore when there are 
     <div class="oc-icon oc-icon-xxl oc-icon-passive">
       <!---->
     </div>
-    <div class="oc-text-muted oc-text-large"><span>There are no resources with a public link at the moment</span></div>
+    <div class="oc-text-muted oc-text-large"><span>There are no resources with a public link at the moment</span>
+      <div class="oc-contextual-helper"><button type="button" class="oc-button oc-rounded oc-button-m oc-button-justify-content-center oc-button-gap-m oc-button-passive oc-button-passive-raw" id="oc-contextual-helper-21-button"><span class="oc-icon oc-icon-s oc-icon-passive"><!----></span></button>
+        <div id="oc-contextual-helper-21" class="oc-drop oc-box-shadow-medium oc-rounded">
+          <div class="oc-card oc-card-body oc-rounded oc-background-secondary oc-p-m">
+            <div class="info-drop-content"><span class="info-text">The Quick link is the link that is always copied if you</span>
+              <ul class="info-list oc-pl-l">
+                <li>
+                  right click on a file and choose "Get link" or
+                </li>
+                <li>
+                  click on the quickaction "Get link"
+                </li>
+              </ul> <span class="info-text-end"></span>
+              <!---->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="oc-text-muted"></div>
   </div>
 </div>
