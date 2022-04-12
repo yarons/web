@@ -95,7 +95,7 @@ export const editLink = async (args: editLinkArgs): Promise<string> => {
     await clickResource({ page: page, path: resourcePaths.join('/') })
   }
   await sidebar.open({ page: page, resource: resourceName })
-  await sidebar.openPanel({ page: page, name: 'links' })
+  await sidebar.openPanel({ page: page, name: 'sharing' })
 
   await page
     .locator(
