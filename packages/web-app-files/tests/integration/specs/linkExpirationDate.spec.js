@@ -172,15 +172,11 @@ describe('Users can set expiration date when sharing via public link', () => {
     expect(editBtn).toBeVisible()
     await fireEvent.click(editBtn)
 
-    const removeExpiryDateBtn = getByTestId('files-link-remove-expiration-date')
+    const removeExpiryDateBtn = getByTestId('files-link-id-1-edit-remove-expiration')
     expect(removeExpiryDateBtn).toBeVisible()
     await fireEvent.click(removeExpiryDateBtn)
-
-    const shareBtn = getByTestId('save-files-link-btn')
-    expect(shareBtn).toBeVisible()
-    await fireEvent.click(shareBtn)
     await waitFor(() => {
-      return expect(queryByTestId('files-link-being-saved')).toBe(null)
+      return expect(queryByTestId('files-link-id-1-edit-remove-expiration')).toBe(null)
     })
 
     expect(within(link).queryByTestId('files-link-id-1-expiration-date')).toBe(null)

@@ -28,7 +28,12 @@
           v-text="noResharePermsMessage"
         />
         <oc-list v-if="links.length" class="oc-overflow-hidden oc-my-m">
-          <li v-for="link in links" :key="link.key" class="oc-py-s">
+          <li
+            v-for="link in links"
+            :key="link.key"
+            class="oc-py-s"
+            :data-testid="`files-link-id-${link.id}`"
+          >
             <name-and-copy :link="link" />
             <details-and-edit
               :link="link"

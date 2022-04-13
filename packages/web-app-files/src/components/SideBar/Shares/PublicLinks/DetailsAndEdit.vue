@@ -4,6 +4,7 @@
       <oc-button
         :id="`edit-public-link-role-dropdown-toggl-${link.id}`"
         appearance="raw"
+        class="oc-text-left"
         gap-size="none"
       >
         <span v-text="visibilityHint" />
@@ -13,13 +14,16 @@
         ref="editPublicLinkRoleDropdown"
         :drop-id="`edit-public-link-role-dropdown`"
         :toggle="`#edit-public-link-role-dropdown-toggl-${link.id}`"
+        padding-size="remove"
         mode="click"
       >
-        <oc-list>
+        <oc-list class="roleDropdownList">
           <li v-for="(descriptor, i) in availableRoleOptions" :key="`role-dropdown-${i}`">
-            <!-- needs "active" handling && correct permission "calculation" -->
             <oc-button
+              :class="{ selected: parseInt(link.permissions) === descriptor.role.bitmask(false) }"
               appearance="raw"
+              justify-content="space-between"
+              class="oc-py-xs oc-px-s"
               @click="
                 updateLink({
                   link: {
@@ -30,7 +34,12 @@
                 })
               "
             >
-              <span v-text="descriptor.label" />
+              <span class="oc-text-bold oc-display-block oc-width-1-1" v-text="descriptor.label" />
+              <span>{{ roleTexts[descriptor.role.bitmask(false)] }} </span>
+              <oc-icon
+                v-if="parseInt(link.permissions) === descriptor.role.bitmask(false)"
+                name="check"
+              />
             </oc-button>
           </li>
         </oc-list>
@@ -65,7 +74,11 @@
         fill-type="line"
       />
       <div v-if="modifiable">
-        <oc-button :id="`edit-public-link-dropdown-toggl-${link.id}`" appearance="raw">
+        <oc-button
+          :id="`edit-public-link-dropdown-toggl-${link.id}`"
+          appearance="raw"
+          :data-testid="`files-link-id-${link.id}-btn-edit`"
+        >
           <oc-icon name="more-2" />
         </oc-button>
         <oc-drop
@@ -83,11 +96,10 @@
                 :max-date="expirationDate.max"
                 :locale="$language.current"
                 :is-required="expirationDate.enforce"
-                class="files-recipient-expiration-datepicker"
-                data-testid="recipient-datepicker"
               >
                 <template #default="{ togglePopover }">
                   <oc-button
+                    :data-testid="`files-link-id-${link.id}-edit-${option.id}`"
                     appearance="raw"
                     :variation="option.variation"
                     @click="togglePopover"
@@ -98,6 +110,7 @@
               <oc-button
                 v-else
                 appearance="raw"
+                :data-testid="`files-link-id-${link.id}-edit-${option.id}`"
                 :variation="option.variation"
                 @click="option.method"
                 v-text="option.title"
@@ -153,23 +166,38 @@ export default {
       return linkRoleDescriptions[parseInt(this.link.permissions)]
     },
 
+    roleTexts() {
+      return linkRoleDescriptions
+    },
+
     editButtonLabel() {
       return this.$gettext('Edit public link')
     },
 
     editOptions() {
       const result = []
+
+      // renaming not allowed for (future) quick links
+      if (this.link) {
+        result.push({
+          id: 'rename',
+          title: this.$gettext('Rename'),
+          method: this.showRenameModal
+        })
+      }
+
       // enabled equals false for oCIS, what am I missing here? Is this about the default expiry date?
       // if (this.expirationDate.enabled) {
       if (this.link.expiration) {
         result.push({
+          id: 'edit-expiration',
           title: this.$gettext('Edit expiration date'),
           method: () => this.updateLink(),
-          showDatepicker: true,
-          variation: 'passive'
+          showDatepicker: true
         })
         if (!this.expirationDate.enforced) {
           result.push({
+            id: 'remove-expiration',
             title: this.$gettext('Remove expiration date'),
             method: () =>
               this.updateLink({
@@ -177,29 +205,29 @@ export default {
                   ...this.link,
                   expiration: ''
                 }
-              }),
-            variation: 'passive'
+              })
           })
         }
       } else {
         result.push({
+          id: 'add-expiration',
           title: this.$gettext('Add expiration date'),
           method: () => this.updateLink(),
-          showDatepicker: true,
-          variation: 'passive'
+          showDatepicker: true
         })
       }
       // }
 
       if (this.link.password) {
         result.push({
+          id: 'edit-password',
           title: this.$gettext('Edit password'),
-          method: this.showPasswordModal,
-          variation: 'passive'
+          method: this.showPasswordModal
         })
 
         if (!this.passwordEnforced) {
           result.push({
+            id: 'remove-password',
             title: this.$gettext('Remove password'),
             method: () =>
               this.updateLink({
@@ -207,21 +235,21 @@ export default {
                   ...this.link,
                   password: ''
                 }
-              }),
-            variation: 'passive'
+              })
           })
         }
       } else {
         result.push({
+          id: 'add-password',
           title: this.$gettext('Add password'),
-          method: this.showPasswordModal,
-          variation: 'passive'
+          method: this.showPasswordModal
         })
       }
 
       return [
         ...result,
         {
+          id: 'delete',
           title: this.$gettext('Delete public link'),
           method: this.deleteLink,
           variation: 'danger'
@@ -308,13 +336,38 @@ export default {
       this.$emit('removePublicLink', { link: this.link })
       this.$refs.editPublicLinkDropdown.hide()
     },
+    showRenameModal() {
+      const modal = {
+        variation: 'passive',
+        title: this.$gettext('Edit name'),
+        cancelText: this.$gettext('Cancel'),
+        confirmText: this.$gettext('Save'),
+        hasInput: true,
+        inputValue: this.link.name ? this.link.name : this.link.token,
+        inputLabel: this.$gettext('Link name'),
+        onCancel: this.hideModal,
+        onConfirm: (name) =>
+          this.updateLink({
+            link: {
+              ...this.link,
+              name
+            },
+            onSuccess: () => {
+              this.hideModal()
+            }
+          })
+      }
+
+      this.createModal(modal)
+    },
     showPasswordModal() {
       const modal = {
         variation: 'passive',
-        title: this.$gettext('Title'),
+        title: this.link.password ? this.$gettext('Edit password') : this.$gettext('Add password'),
         cancelText: this.$gettext('Cancel'),
-        confirmText: this.$gettext('Rename'),
+        confirmText: this.link.password ? this.$gettext('Apply') : this.$gettext('Set'),
         hasInput: true,
+        // inputType: 'password',
         inputLabel: this.$gettext('Password'),
         onCancel: this.hideModal,
         onConfirm: (password) =>
@@ -340,5 +393,29 @@ export default {
   min-width: 5rem !important;
   display: flex;
   justify-content: flex-end;
+}
+
+.roleDropdownList li {
+  .oc-button {
+    text-align: left;
+    border-radius: 0;
+    width: 100%;
+
+    &:hover,
+    &:focus {
+      color: var(--oc-color-text-default) !important;
+    }
+
+    &.selected,
+    &:hover,
+    &:focus {
+      background-color: var(--oc-color-swatch-primary-default) !important;
+      color: var(--oc-color-text-inverse) !important;
+
+      ::v-deep .oc-icon > svg {
+        fill: var(--oc-color-text-inverse) !important;
+      }
+    }
+  }
 }
 </style>
