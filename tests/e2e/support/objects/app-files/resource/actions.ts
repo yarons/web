@@ -4,6 +4,10 @@ import path from 'path'
 import { File } from '../../../types'
 import { sidebar } from '../utils'
 
+const downloadSelectorSideBar = '#oc-files-actions-sidebar .oc-files-actions-download-file-trigger'
+const downloadSelectorBatchActionSingleFile = '.oc-files-actions-download-file-trigger'
+const downloadSelectorBatchActionMultiple = '.oc-files-actions-download-archive-trigger'
+
 export const clickResource = async ({
   page,
   path
@@ -13,10 +17,8 @@ export const clickResource = async ({
 }): Promise<void> => {
   const paths = path.split('/')
   for (const name of paths) {
-    const resourceSelector = `[data-test-resource-name="${name}"]`
-    await page.waitForSelector(resourceSelector)
     await Promise.all([
-      page.locator(resourceSelector).click(),
+      page.locator(`[data-test-resource-name="${name}"]`).click(),
       page.waitForResponse((resp) => resp.url().endsWith(encodeURIComponent(name)))
     ])
   }
@@ -114,7 +116,7 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
 
         const [download] = await Promise.all([
           page.waitForEvent('download'),
-          page.locator('#oc-files-actions-sidebar .oc-files-actions-download-file-trigger').click()
+          page.locator(downloadSelectorSideBar).click()
         ])
 
         await sidebar.close({ page: page })
@@ -125,20 +127,16 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
     }
 
     case 'BATCH_ACTION': {
-      await selectMultipleResources({ page: page, names: names, folder: folder })
+      await selectResources({ page: page, names: names, folder: folder })
+      let downloadSelector = downloadSelectorBatchActionMultiple
       if (names.length === 1) {
-        const [download] = await Promise.all([
-          page.waitForEvent('download'),
-          page.locator('.oc-files-actions-download-file-trigger').click()
-        ])
-        downloads.push(download)
-      } else {
-        const [download] = await Promise.all([
-          page.waitForEvent('download'),
-          page.locator('.oc-files-actions-download-archive-trigger').click()
-        ])
-        downloads.push(download)
+        downloadSelector = downloadSelectorBatchActionSingleFile
       }
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.locator(downloadSelector).click()
+      ])
+      downloads.push(download)
       break
     }
   }
@@ -152,7 +150,7 @@ export type selectResourcesArgs = {
   folder: string
 }
 
-export const selectMultipleResources = async (args: selectResourcesArgs): Promise<void> => {
+export const selectResources = async (args: selectResourcesArgs): Promise<void> => {
   const { page, folder, names } = args
   if (folder) {
     await clickResource({ page: page, path: folder })
