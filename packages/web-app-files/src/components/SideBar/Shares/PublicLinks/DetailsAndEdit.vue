@@ -16,7 +16,7 @@
         mode="click"
       >
         <oc-list>
-          <li v-for="(role, i) in availableRoleOptions" :key="`role-dropdown-${i}`">
+          <li v-for="(descriptor, i) in availableRoleOptions" :key="`role-dropdown-${i}`">
             <!-- needs "active" handling && correct permission "calculation" -->
             <oc-button
               appearance="raw"
@@ -24,20 +24,19 @@
                 updateLink({
                   link: {
                     ...link,
-                    permissions: role.role.permissions()
+                    permissions: descriptor.role.bitmask(false)
                   },
                   dropRef: $refs.editPublicLinkRoleDropdown
                 })
               "
             >
-              <span v-text="role.label" />
+              <span v-text="descriptor.label" />
             </oc-button>
           </li>
         </oc-list>
       </oc-drop>
     </div>
     <p v-else class="oc-my-rm" v-text="visibilityHint" />
-
     <div :class="{ 'oc-pr-s': !modifiable }" class="details-buttons">
       <oc-button
         v-if="link.indirect"
@@ -77,7 +76,27 @@
         >
           <oc-list>
             <li v-for="(option, i) in editOptions" :key="`public-link-edit-option-${i}`">
+              <oc-datepicker
+                v-if="option.showDatepicker"
+                v-model="newExpiration"
+                :min-date="expirationDate.min"
+                :max-date="expirationDate.max"
+                :locale="$language.current"
+                :is-required="expirationDate.enforce"
+                class="files-recipient-expiration-datepicker"
+                data-testid="recipient-datepicker"
+              >
+                <template #default="{ togglePopover }">
+                  <oc-button
+                    appearance="raw"
+                    :variation="option.variation"
+                    @click="togglePopover"
+                    v-text="option.title"
+                  />
+                </template>
+              </oc-datepicker>
               <oc-button
+                v-else
                 appearance="raw"
                 :variation="option.variation"
                 @click="option.method"
@@ -93,6 +112,7 @@
 
 <script>
 import { basename } from 'path'
+import { mapActions } from 'vuex'
 import Mixins from '../../../../mixins'
 import { createLocationSpaces, isLocationSpacesActive } from '../../../../router'
 import { DateTime } from 'luxon'
@@ -123,6 +143,11 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      newExpiration: this.link.expiration
+    }
+  },
   computed: {
     visibilityHint() {
       return linkRoleDescriptions[parseInt(this.link.permissions)]
@@ -137,10 +162,10 @@ export default {
       // enabled equals false for oCIS, what am I missing here? Is this about the default expiry date?
       // if (this.expirationDate.enabled) {
       if (this.link.expiration) {
-        // method below needs to open datepicker and "save-on-click" || update method to this.updateLinkExpiryDate
         result.push({
           title: this.$gettext('Edit expiration date'),
           method: () => this.updateLink(),
+          showDatepicker: true,
           variation: 'passive'
         })
         if (!this.expirationDate.enforced) {
@@ -157,10 +182,10 @@ export default {
           })
         }
       } else {
-        // method below needs to open datepicker and "save-on-click" || update method to this.updateLinkExpiryDate
         result.push({
           title: this.$gettext('Add expiration date'),
           method: () => this.updateLink(),
+          showDatepicker: true,
           variation: 'passive'
         })
       }
@@ -168,9 +193,8 @@ export default {
 
       if (this.link.password) {
         result.push({
-          // needs to bubble up into textinput modal
           title: this.$gettext('Edit password'),
-          method: () => this.updateLink(),
+          method: this.showPasswordModal,
           variation: 'passive'
         })
 
@@ -189,9 +213,8 @@ export default {
         }
       } else {
         result.push({
-          // needs to bubble up into textinput modal
           title: this.$gettext('Add password'),
-          method: () => this.updateLink(),
+          method: this.showPasswordModal,
           variation: 'passive'
         })
       }
@@ -260,21 +283,53 @@ export default {
       return this.$gettext('This link is password-protected')
     }
   },
-
-  methods: {
-    updateLink({ link = this.link, dropRef = this.$refs.editPublicLinkDropdown }) {
-      this.$emit('updateLink', {
-        link,
-        updateCurrentLink: () => {
-          // this is an "unexpected mutation"
-          this.link = link
+  watch: {
+    newExpiration(expiration) {
+      this.updateLink({
+        link: {
+          ...this.link,
+          expiration
         }
       })
+    }
+  },
+
+  methods: {
+    ...mapActions(['createModal', 'hideModal']),
+    updateLink({
+      link = this.link,
+      dropRef = this.$refs.editPublicLinkDropdown,
+      onSuccess = () => {}
+    }) {
+      this.$emit('updateLink', { link, onSuccess })
       dropRef.hide()
     },
     deleteLink() {
       this.$emit('removePublicLink', { link: this.link })
       this.$refs.editPublicLinkDropdown.hide()
+    },
+    showPasswordModal() {
+      const modal = {
+        variation: 'passive',
+        title: this.$gettext('Title'),
+        cancelText: this.$gettext('Cancel'),
+        confirmText: this.$gettext('Rename'),
+        hasInput: true,
+        inputLabel: this.$gettext('Password'),
+        onCancel: this.hideModal,
+        onConfirm: (password) =>
+          this.updateLink({
+            link: {
+              ...this.link,
+              password
+            },
+            onSuccess: () => {
+              this.hideModal()
+            }
+          })
+      }
+
+      this.createModal(modal)
     }
   }
 }

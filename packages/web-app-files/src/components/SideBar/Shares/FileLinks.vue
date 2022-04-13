@@ -348,10 +348,6 @@ export default defineComponent({
       }
 
       return {
-        // delete me later
-        // await new Promise((resolve) => setTimeout(resolve, 10000))
-
-        // permissions: link.role.role.bitmask(false),
         expireDate,
         password: link.password,
         permissions: link.permissions,
@@ -380,7 +376,7 @@ export default defineComponent({
       })
     },
 
-    async updatePublicLink({ link, updateCurrentLink }) {
+    async updatePublicLink({ link, onSuccess = () => {}, onError = (e) => {} }) {
       const params = this.getParamsForLink(link)
 
       await this.updateLink({
@@ -388,8 +384,9 @@ export default defineComponent({
         client: this.$client,
         params
       })
-        .then(updateCurrentLink)
+        .then(onSuccess)
         .catch((e) => {
+          onError(e)
           console.error(e)
           this.showMessage({
             title: this.$gettext('Error when updating public link'),
