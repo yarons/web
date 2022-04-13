@@ -20,7 +20,7 @@ export const clickResource = async ({
   const paths = path.split('/')
   for (const name of paths) {
     const resourceSelector = `[data-test-resource-name="${name}"]`
-    await page.waitForSelector(resourceSelector)
+    // await page.waitForSelector(resourceSelector)
     await Promise.all([
       page.locator(resourceSelector).click(),
       page.waitForResponse((resp) => resp.url().endsWith(encodeURIComponent(name)))
