@@ -1,12 +1,14 @@
 import { Download, Page } from 'playwright'
+import util from 'util'
 import { resourceExists, waitForResources } from './utils'
 import path from 'path'
 import { File } from '../../../types'
 import { sidebar } from '../utils'
 
-const downloadSelectorSideBar = '#oc-files-actions-sidebar .oc-files-actions-download-file-trigger'
-const downloadSelectorBatchActionSingleFile = '.oc-files-actions-download-file-trigger'
-const downloadSelectorBatchActionMultiple = '.oc-files-actions-download-archive-trigger'
+const downloadButtonSideBar = '#oc-files-actions-sidebar .oc-files-actions-download-file-trigger'
+const downloadButtonBatchActionSingleFile = '.oc-files-actions-download-file-trigger'
+const downloadButtonBatchActionMultiple = '.oc-files-actions-download-archive-trigger'
+const checkBox = `//*[@data-test-resource-name="%s"]//ancestor::tr//input`
 
 export const clickResource = async ({
   page,
@@ -116,7 +118,7 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
 
         const [download] = await Promise.all([
           page.waitForEvent('download'),
-          page.locator(downloadSelectorSideBar).click()
+          page.locator(downloadButtonSideBar).click()
         ])
 
         await sidebar.close({ page: page })
@@ -128,9 +130,9 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
 
     case 'BATCH_ACTION': {
       await selectResources({ page: page, names: names, folder: folder })
-      let downloadSelector = downloadSelectorBatchActionMultiple
+      let downloadSelector = downloadButtonBatchActionMultiple
       if (names.length === 1) {
-        downloadSelector = downloadSelectorBatchActionSingleFile
+        downloadSelector = downloadButtonBatchActionSingleFile
       }
       const [download] = await Promise.all([
         page.waitForEvent('download'),
@@ -156,13 +158,16 @@ export const selectResources = async (args: selectResourcesArgs): Promise<void> 
     await clickResource({ page: page, path: folder })
   }
 
-  for (const name of names) {
-    const resourceCheckbox = page.locator(
-      `//*[@data-test-resource-name="${name}"]//ancestor::tr//input`
-    )
-
-    if (!(await resourceCheckbox.isChecked())) {
-      await resourceCheckbox.check()
+  for (const resource of names) {
+    const exists = await resourceExists({
+      page: page,
+      name: resource
+    })
+    if (exists) {
+      const resourceCheckbox = page.locator(util.format(checkBox, resource))
+      if (!(await resourceCheckbox.isChecked())) {
+        await resourceCheckbox.check()
+      }
     }
   }
 }
