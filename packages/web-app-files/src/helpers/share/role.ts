@@ -320,7 +320,7 @@ const shareRoleDescriptions = {
 /**
  * Maps relevant permission bitmasks of link roles to descriptions
  */
-const linkRoleDescriptions = {
+export const linkRoleDescriptions = {
   [linkRoleViewerFile.bitmask(false)]: $gettext('Recipients can view and download contents.'),
   [linkRoleViewerFolder.bitmask(false)]: $gettext('Recipients can view and download contents.'),
   [linkRoleContributorFolder.bitmask(false)]: $gettext(

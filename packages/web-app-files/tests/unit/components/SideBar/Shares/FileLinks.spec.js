@@ -233,9 +233,6 @@ describe('FileLinks', () => {
       localVue,
       store: store,
       stubs: stubs,
-      provide: {
-        changeView: jest.fn()
-      },
       mocks: {
         $route: {
           params: {}
@@ -251,9 +248,6 @@ describe('FileLinks', () => {
       stubs: {
         'link-edit': true,
         'list-item': true
-      },
-      provide: {
-        changeView: jest.fn()
       },
       mocks: {
         $route: {

@@ -110,9 +110,6 @@ function getMountedWrapper() {
     propsData: {
       link: {}
     },
-    provide: {
-      changeView: jest.fn()
-    },
     store: createStore(),
     stubs: {
       'oc-button': false,
@@ -128,9 +125,6 @@ function getShallowMountedWrapper() {
       link: {}
     },
     store: createStore(),
-    provide: {
-      changeView: jest.fn()
-    },
     directives: {
       'oc-tooltip': jest.fn()
     },

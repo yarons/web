@@ -488,9 +488,6 @@ function createStore({
     modules: {
       Files: {
         namespaced: true,
-        state: {
-          publicLinkInEdit: linkInEdit
-        },
         getters: {
           highlightedFile: function () {
             return { type: type, isFolder: type === 'folder' }
@@ -566,9 +563,6 @@ function getMountedWrapper(store = createStore(), data = {}) {
 const mountOptions = (data, store) => ({
   localVue,
   store,
-  provide: {
-    changeView: jest.fn()
-  },
   directives: {
     translate: jest.fn()
   },
