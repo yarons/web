@@ -252,7 +252,6 @@ export default defineComponent({
           pathFileWasUploadedTo += file.meta.relativeFolder
         }
 
-        const fileRoute = file.meta.route
         const fileIsInCurrentPath = pathFileWasUploadedTo === this.currentPath
 
         await this.$nextTick()
@@ -616,7 +615,7 @@ export default defineComponent({
       const conflicts = []
       const uppyResources: UppyResource[] = this.inputFilesToUppyFiles(files)
       for (const file of uppyResources) {
-        const relativeFilePath = file.meta.relativeFilePath
+        const relativeFilePath = file.meta.relativePath
         if (relativeFilePath) {
           const rootFolder = relativeFilePath.replace(/^\/+/, '').split('/')[0]
           const exists = this.files.find((f) => f.name === rootFolder)
