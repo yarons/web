@@ -134,13 +134,17 @@ export default {
       type: Array,
       required: true
     },
-    passwordEnforced: {
-      type: Boolean,
-      default: false
+    defaultLinkName: {
+      type: String,
+      required: true
     },
     expirationDate: {
       type: Object,
       required: false
+    },
+    passwordEnforced: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -149,7 +153,7 @@ export default {
       saving: false,
       valid: true,
       link: {
-        name: '',
+        name: this.defaultLinkName,
         role: this.availableRoleOptions[0],
         expiration: this.expirationDate.default,
         password: null
@@ -199,9 +203,13 @@ export default {
   },
   methods: {
     createLink() {
+      console.log(this.link)
       this.saving = true
       this.$emit('createPublicLink', {
-        link: this.link,
+        link: {
+          ...this.link,
+          permissions: this.link.role.role.bitmask(false).toString()
+        },
         showError: (e) => {
           this.error = e
           this.saving = false

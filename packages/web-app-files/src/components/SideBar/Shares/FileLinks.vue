@@ -36,6 +36,7 @@
           >
             <name-and-copy :link="link" />
             <details-and-edit
+              :is-folder-share="highlightedFile.isFolder"
               :link="link"
               :modifiable="canEdit"
               :password-enforced="passwordEnforced"
@@ -54,6 +55,7 @@
       :aria-hidden="currentView !== VIEW_CREATE"
     >
       <create-form
+        :default-link-name="defaultNewLinkName"
         :password-enforced="passwordEnforced"
         :expiration-date="globalExpirationDate"
         :available-role-options="availableRoleOptions"
@@ -124,9 +126,11 @@ export default defineComponent({
       return this.$gettext('Create new public link')
     },
 
-    canEdit() {
-      // TODO: Figure out if user is allowed to actually edit links, currently anyone can
-      return true
+    defaultNewLinkName() {
+      if (this.capabilities?.files_sharing?.public?.defaultPublicLinkShareName) {
+        return this.capabilities?.files_sharing?.public?.defaultPublicLinkShareName
+      }
+      return ''
     },
 
     globalExpirationDate() {
@@ -209,6 +213,11 @@ export default defineComponent({
 
     canCreatePublicLinks() {
       return this.highlightedFile.canShare({ user: this.user })
+    },
+
+    canEdit() {
+      // TODO: Figure out if user is allowed to actually edit links, currently anyone can
+      return this.canCreatePublicLinks
     },
 
     noResharePermsMessage() {
@@ -351,6 +360,8 @@ export default defineComponent({
           .endOf('day')
           .toFormat("yyyy-MM-dd'T'HH:mm:ssZZZ")
       }
+
+      console.log(link)
 
       return {
         expireDate,

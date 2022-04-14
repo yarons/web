@@ -147,6 +147,13 @@ module.exports = {
      * @returns {exports}
      */
     removePublicLink: function (linkName) {
+      const linkRowEditButtonSelector =
+        this.elements.publicLinkContainer.selector +
+        util.format(this.elements.publicLinkEditButton.selector, linkName)
+      const linkRowEditButton = {
+        locateStrategy: this.elements.publicLinkEditButton.locateStrategy,
+        selector: linkRowEditButtonSelector
+      }
       const linkRowDeleteButtonSelector =
         this.elements.publicLinkContainer.selector +
         util.format(this.elements.publicLinkDeleteButton.selector, linkName)
@@ -154,8 +161,10 @@ module.exports = {
         locateStrategy: this.elements.publicLinkDeleteButton.locateStrategy,
         selector: linkRowDeleteButtonSelector
       }
-      return this.waitForElementVisible(linkRowDeleteButton)
+      return this.waitForElementVisible(linkRowEditButton)
         .initAjaxCounters()
+        .click(linkRowEditButton)
+        .waitForElementVisible(linkRowDeleteButton)
         .click(linkRowDeleteButton)
         .waitForElementVisible('@dialog')
         .waitForAnimationToFinish() // wait for transition on the modal to finish
@@ -169,6 +178,13 @@ module.exports = {
      * @returns {exports}
      */
     cancelRemovePublicLink: function (linkName) {
+      const linkRowEditButtonSelector =
+        this.elements.publicLinkContainer.selector +
+        util.format(this.elements.publicLinkEditButton.selector, linkName)
+      const linkRowEditButton = {
+        locateStrategy: this.elements.publicLinkEditButton.locateStrategy,
+        selector: linkRowEditButtonSelector
+      }
       const linkRowDeleteButtonSelector =
         this.elements.publicLinkContainer.selector +
         util.format(this.elements.publicLinkDeleteButton.selector, linkName)
@@ -176,8 +192,10 @@ module.exports = {
         locateStrategy: this.elements.publicLinkDeleteButton.locateStrategy,
         selector: linkRowDeleteButtonSelector
       }
-      return this.waitForElementVisible(linkRowDeleteButton)
+      return this.waitForElementVisible(linkRowEditButton)
         .initAjaxCounters()
+        .click(linkRowEditButton)
+        .waitForElementVisible(linkRowDeleteButton)
         .click(linkRowDeleteButton)
         .waitForElementVisible('@dialog')
         .waitForAnimationToFinish() // wait for transition on the modal to finish
@@ -416,7 +434,7 @@ module.exports = {
       selector: '.oc-files-file-link-name'
     },
     publicLinkSubRole: {
-      selector: '.oc-files-file-link-role'
+      selector: '.link-details .oc-invisible-sr'
     },
     publicLinkSubVia: {
       selector: '.oc-files-file-link-via'
@@ -452,12 +470,12 @@ module.exports = {
     },
     publicLinkEditButton: {
       selector:
-        '//h5[contains(@class, "oc-files-file-link-name") and text()="%s"]/../../..//button[contains(@class, "oc-files-file-link-edit")]',
+        '//h5[contains(@class, "oc-files-file-link-name") and text()="%s"]//ancestor::li//div[contains(@class, "details-buttons")]//button[contains(@class, "edit-drop-trigger")]',
       locateStrategy: 'xpath'
     },
     publicLinkDeleteButton: {
       selector:
-        '//h5[contains(@class, "oc-files-file-link-name") and text()="%s"]/../../..//button[contains(@class, "oc-files-file-link-delete")]',
+        '//h5[contains(@class, "oc-files-file-link-name") and text()="%s"]//ancestor::li//div[contains(@class, "details-buttons")]//button[text()="Delete public link"]',
       locateStrategy: 'xpath'
     },
     publicLinkURLCopyButton: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-flex oc-flex-between oc-flex-middle oc-pl-s">
+  <div class="link-details oc-flex oc-flex-between oc-flex-middle oc-pl-s">
     <div v-if="modifiable">
       <oc-button
         :id="`edit-public-link-role-dropdown-toggl-${link.id}`"
@@ -7,6 +7,7 @@
         class="oc-text-left"
         gap-size="none"
       >
+        <span class="oc-invisible-sr" v-text="linkRole" />
         <span v-text="visibilityHint" />
         <oc-icon name="arrow-down-s" />
       </oc-button>
@@ -45,7 +46,10 @@
         </oc-list>
       </oc-drop>
     </div>
-    <p v-else class="oc-my-rm" v-text="visibilityHint" />
+    <p v-else class="oc-my-rm">
+      <span class="oc-invisible-sr" v-text="linkRole" />
+      <span v-text="visibilityHint" />
+    </p>
     <div :class="{ 'oc-pr-s': !modifiable }" class="details-buttons">
       <oc-button
         v-if="link.indirect"
@@ -77,6 +81,7 @@
         <oc-button
           :id="`edit-public-link-dropdown-toggl-${link.id}`"
           appearance="raw"
+          class="edit-drop-trigger"
           :data-testid="`files-link-id-${link.id}-btn-edit`"
         >
           <oc-icon name="more-2" />
@@ -129,7 +134,7 @@ import { mapActions } from 'vuex'
 import Mixins from '../../../../mixins'
 import { createLocationSpaces, isLocationSpacesActive } from '../../../../router'
 import { DateTime } from 'luxon'
-import { linkRoleDescriptions } from '../../../../helpers/share'
+import { linkRoleDescriptions, LinkShareRoles } from '../../../../helpers/share'
 
 export default {
   name: 'DetailsAndEdit',
@@ -142,6 +147,10 @@ export default {
     expirationDate: {
       type: Object,
       required: false
+    },
+    isFolderShare: {
+      type: Boolean,
+      default: false
     },
     link: {
       type: Object,
@@ -164,6 +173,10 @@ export default {
   computed: {
     visibilityHint() {
       return linkRoleDescriptions[parseInt(this.link.permissions)]
+    },
+
+    linkRole() {
+      return LinkShareRoles.getByBitmask(parseInt(this.link.permissions), this.isFolderShare).label
     },
 
     roleTexts() {
@@ -367,7 +380,7 @@ export default {
         cancelText: this.$gettext('Cancel'),
         confirmText: this.link.password ? this.$gettext('Apply') : this.$gettext('Set'),
         hasInput: true,
-        // inputType: 'password',
+        inputType: 'password',
         inputLabel: this.$gettext('Password'),
         onCancel: this.hideModal,
         onConfirm: (password) =>
